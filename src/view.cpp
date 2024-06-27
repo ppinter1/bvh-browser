@@ -59,9 +59,9 @@ void View::setText(const char* text) {
 		SDL_Colour colour;
 		colour.r = colour.g = colour.b = /*colour.a =*/ 255;
 		SDL_Surface* s = TTF_RenderText_Blended(staticFont, text, colour);
-		m_textWidth  = s->w;
+		m_textWidth  = s->pitch / 4;
 		m_textHeight = s->h;
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, s->w, s->h, 0, GL_BGRA, GL_UNSIGNED_BYTE, s->pixels);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_textWidth, s->h, 0, GL_BGRA, GL_UNSIGNED_BYTE, s->pixels);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		SDL_FreeSurface(s);

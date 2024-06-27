@@ -260,9 +260,9 @@ void setLayout(AppMode layout);
 
 int main(int argc, char* argv[]) {
 	printf(
-		"bvh-browser (c) Sam Gynn\n"
-		"http://sam.draknek.org/projects/bvh-browser\n"
-		"Distributed under GPL\n");
+		"usage: bvh-browser {.bvh | .zip | directory}\n\n"
+		"bvh-browser (c) Sam Gynn (http://sam.draknek.org)\n"
+		"Distributed under GPL\n\n");
 	
 	app.activeIndex = -1;
 	app.mode = VIEW_SINGLE;
@@ -320,7 +320,7 @@ int main(int argc, char* argv[]) {
 	glEnable(GL_DEPTH_TEST);
 
 	// Load font
-	View::setFont("/usr/share/fonts/truetype/DejaVuSans.ttf", 16);	// ick - seems there is no search.
+	View::setFont("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 16);	// ick - seems there is no search.
 
 	// Set up views
 	createViews();
