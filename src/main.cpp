@@ -259,11 +259,17 @@ void setupTiles(bool smooth);
 void setLayout(AppMode layout);
 
 int main(int argc, char* argv[]) {
-	printf(
-		"usage: bvh-browser {.bvh | .zip | directory}\n\n"
-		"bvh-browser (c) Sam Gynn (http://sam.draknek.org)\n"
-		"Distributed under GPL\n\n");
-	
+
+	if (argc == 1) {
+
+		printf(
+			"\nusage: bvh-browser {.bvh | .zip | directory/}\n\n"
+			"bvh-browser (c) Sam Gynn (http://sam.draknek.org)\n"
+			"Distributed under GPL\n\n");
+		
+		return 1;
+	}
+
 	app.activeIndex = -1;
 	app.mode = VIEW_SINGLE;
 	app.scrollOffset = 0;

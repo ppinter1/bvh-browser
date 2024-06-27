@@ -40,3 +40,5 @@ clean:
 	rm -f *~ */*~ $(exec)
 	rm -rf $(OBJDIR)
 
+install:
+	sudo cp $(exec) /usr/local/bin
