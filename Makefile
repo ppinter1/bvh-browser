@@ -42,3 +42,6 @@ clean:
 
 install:
 	sudo cp $(exec) /usr/local/bin
+
+uninstall:
+	sudo rm /usr/local/bin/$(exec)
