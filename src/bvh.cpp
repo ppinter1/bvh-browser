@@ -224,10 +224,10 @@ bool BVH::load(const char* data) {
 						part->motion[frame].rotation = rot;
 						part->motion[frame].offset = pos;
 
-						// Extract matrix for comparison
-						float mat[16];
-						Transform tmp = part->motion[frame];
-						tmp.toMatrix(mat);
+						// // Extract matrix for comparison
+						// float mat[16];
+						// Transform tmp = part->motion[frame];
+						// tmp.toMatrix(mat);
 
 						// Next part
 						++partIndex;
