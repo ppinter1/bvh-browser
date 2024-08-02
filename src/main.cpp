@@ -164,7 +164,7 @@ BVH* loadFile (const FileEntry& file) {
 	if (file.archive.empty()) {
 
 		std::string filename = file.directory + "/" + file.name;
-		
+
 		FILE* fp = fopen (filename.c_str(), "r");
 
 		if (!fp) { printf ("Failed\n"); return 0; }
@@ -202,7 +202,7 @@ BVH* loadFile (const FileEntry& file) {
 		size_t size;
 		void* p = mz_zip_reader_extract_to_heap (&zipFile, file.zipIndex, &size, 0);
 
-		if(p) {
+		if (p) {
 
 			((char*)p)[size-1] = 0;
 			bvh = new BVH();
