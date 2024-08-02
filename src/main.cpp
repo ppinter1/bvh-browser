@@ -125,7 +125,9 @@ void addDirectory(const char* dir, bool recursive) {
 // -------------------------------------------------------------------------------------- //
 
 BVH* loadFile(const FileEntry& file) {
-	printf("Load %s\n", file.name.c_str());
+
+	printf ("loadFile: %s\n", file.name.c_str());
+
 	if(file.archive.empty()) {
 		std::string filename = file.directory + "/" + file.name;
 		FILE* fp = fopen(filename.c_str(), "r");
