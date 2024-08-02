@@ -91,7 +91,7 @@ int addZip (const char* f) {
 
 	mz_zip_archive zipFile;
 	memset (&zipFile, 0, sizeof(zipFile));
-	mz_bool status = mz_zip_reader_init_file(&zipFile, f, 0);
+	mz_bool status = mz_zip_reader_init_file (&zipFile, f, 0);
 
 	if (!status) {
 
@@ -114,9 +114,9 @@ int addZip (const char* f) {
 
 				FileEntry file;
 				file.directory = getDirectory (stat.m_filename);
-				file.name = getName (stat.m_filename);
-				file.archive = f;
-				file.zipIndex = i;
+				file.name 	   = getName (stat.m_filename);
+				file.archive   = f;
+				file.zipIndex  = i;
 
 				app.files.push_back (file);
 			}
