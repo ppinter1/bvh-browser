@@ -1,10 +1,11 @@
 #ifndef _BVH_
 #define _BVH_
 
-#include "transform.h"
 #include <vector>
+#include "bvh_math.h"
 
 /** bvh mocap data */
+
 class BVH {
 	public:
 
@@ -12,15 +13,15 @@ class BVH {
 
     struct Part {
 
-        char*               name;
-        int                 index;
-        int                 parent;
-        int                 channels;
-        int                 childCount;
-        vec3       			offset;
-        vec3       			end;
-        Transform* 			motion;
-		std::vector<int>    childIndices;
+        char*               	name;
+        int                 	index;
+        int                 	parent;
+        int                 	channels;
+        int                 	childCount;
+        BVH_Math::vec3       	offset;
+        BVH_Math::vec3       	end;
+        BVH_Math::Transform*	motion;
+		std::vector<int>    	childIndices;
     };
 
 	public:

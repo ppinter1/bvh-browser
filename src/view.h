@@ -1,7 +1,6 @@
 #ifndef _VIEW_
 #define _VIEW_
 
-#include "transform.h"
 #include "bvh.h"
 
 /** Single bvh view */
@@ -52,20 +51,20 @@ class View {
 
 	BVH*       m_bvh;
 	char*      m_name;
-	Transform* m_final;
+	BVH_Math::Transform* m_final;
 	float      m_frame;
 
 	float m_projectionMatrix[16];
 	float m_viewMatrix[16];
 	float m_near, m_far;
-	vec3  m_camera;
-	vec3  m_target;
+	BVH_Math::vec3  m_camera;
+	BVH_Math::vec3  m_target;
 
 	protected:
 	void updateBones(float frame);
 	void updateCamera();
 	void updateProjection(float fov=90);
-	float zoomToFit(const vec3& point, const vec3& dir, const vec3* n, float* d);
+	float zoomToFit(const BVH_Math::vec3& point, const BVH_Math::vec3& dir, const BVH_Math::vec3* n, float* d);
 	static void drawGrid();
 	static void drawBone();
 

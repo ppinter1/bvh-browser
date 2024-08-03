@@ -15,7 +15,7 @@ View::View(int x, int y, int w, int h) : m_x(x), m_y(y), m_width(w), m_height(h)
 	m_frame = 0;
 	updateProjection();
 
-	m_camera = vec3(60, 60, 60);
+	m_camera = BVH_Math::BVH_Math::vec3(60, 60, 60);
 	updateCamera();
 }
 
@@ -33,7 +33,7 @@ void View::setBVH(BVH* bvh, const char* name) {
 	m_frame = 0;
 	if(bvh) {
 		m_name = strdup(name);
-		m_final = new Transform[ m_bvh->getPartCount() ];
+		m_final = new BVH_Math::Transform[ m_bvh->getPartCount() ];
 		updateBones(0);
 	}
 }
@@ -103,7 +103,7 @@ bool View::contains(int x, int y) {
 }
 
 void View::setCamera(float yaw, float pitch, float zoom) {
-	vec3 d;
+	BVH_Math::vec3 d;
 	float cp = cos(pitch);
 	d.x = sin(yaw) * cp;
 	d.y = sin(pitch);
@@ -112,19 +112,19 @@ void View::setCamera(float yaw, float pitch, float zoom) {
 	updateCamera();
 }
 void View::rotateView(float yaw, float pitch) {
-	vec3 d = m_camera - m_target;
+	BVH_Math::vec3 d = m_camera - m_target;
 	float zoom = d.length();
 	float oldYaw = atan2(d.x, d.z);
 	float oldPitch = atan2(d.y, sqrt(d.x*d.x+d.z*d.z));
 	setCamera(oldYaw+yaw, oldPitch+pitch, zoom);
 }
 void View::zoomView(float mult) {
-	vec3 d = m_camera - m_target;
+	BVH_Math::vec3 d = m_camera - m_target;
 	m_camera = m_target + d * mult;
 	updateCamera();
 }
 
-inline float View::zoomToFit(const vec3& point, const vec3& dir, const vec3* n, float* d) {
+inline float View::zoomToFit(const BVH_Math::vec3& point, const BVH_Math::vec3& dir, const BVH_Math::vec3* n, float* d) {
 	float shift = 0;
 	for(int i=0; i<4; ++i) {
 		// Distance to plane in dir
@@ -143,19 +143,19 @@ inline float View::zoomToFit(const vec3& point, const vec3& dir, const vec3* n, 
 void View::autoZoom() {
 	if(!m_bvh) return;
 
-	vec3 dir = m_target - m_camera;
+	BVH_Math::vec3 dir = m_target - m_camera;
 	dir.normalise();
 	m_camera = m_target;
 
-	vec3 n[4];
+	BVH_Math::vec3 n[4];
 	float d[4];
 	float m[16];
 	// Get frustum planes
-	multMatrix(m_projectionMatrix, m_viewMatrix, m);
-	n[0] = vec3(m[3]+m[0], m[7]+m[4], m[11]+m[8]);
-	n[1] = vec3(m[3]-m[0], m[7]-m[4], m[11]-m[8]);
-	n[2] = vec3(m[3]+m[1], m[7]+m[5], m[11]+m[9]);
-	n[3] = vec3(m[3]-m[1], m[7]-m[5], m[11]-m[9]);
+	BVH_Math::multMatrix (m_projectionMatrix, m_viewMatrix, m);
+	n[0] = BVH_Math::vec3(m[3]+m[0], m[7]+m[4], m[11]+m[8]);
+	n[1] = BVH_Math::vec3(m[3]-m[0], m[7]-m[4], m[11]-m[8]);
+	n[2] = BVH_Math::vec3(m[3]+m[1], m[7]+m[5], m[11]+m[9]);
+	n[3] = BVH_Math::vec3(m[3]-m[1], m[7]-m[5], m[11]-m[9]);
 	for(int i=0; i<4; ++i) d[i] = n[i].dot(m_camera);
 
 	// Zoom out to fit points
@@ -248,12 +248,12 @@ void View::render() const {
 			glMultMatrixf(matrix);
 
 			// Rotate to use z axis mesh
-			const vec3 zAxis(0,0,1);
-			vec3 dir = m_bvh->getPart(i)->end;
+			const BVH_Math::vec3 zAxis(0,0,1);
+			BVH_Math::vec3 dir = m_bvh->getPart(i)->end;
 			float length = dir.length();
 			dir *= 1.0 / length;
 			if(dir.z < 0.999) {
-				vec3 n = dir.cross(zAxis);
+				BVH_Math::vec3 n = dir.cross(zAxis);
 				float d = dir.dot(zAxis);
 				glRotatef( -acos(d) * 180/3.141592653592, n.x, n.y, n.z );
 			}
@@ -314,20 +314,20 @@ void View::updateBones(float frame) {
 		t = 0.f;
 	}
 
-	Transform local;
+	BVH_Math::Transform local;
 	for(int i=0; i<m_bvh->getPartCount(); ++i) {
 		const BVH::Part* part = m_bvh->getPart(i);
 
 		if(t > 0) {
 			local.offset = lerp(part->motion[f].offset, part->motion[f+1].offset, t);
-			local.rotation = slerp(part->motion[f].rotation, part->motion[f+1].rotation, t);
+			local.rotation = BVH_Math::slerp(part->motion[f].rotation, part->motion[f+1].rotation, t);
 		} else {
 			local = part->motion[f];
 		}
 
 		if(part->parent>=0) {
 			local.offset = part->offset; // ?
-			const Transform& parent = m_final[part->parent];
+			const BVH_Math::Transform &parent = m_final[part->parent];
 			m_final[i].offset   = parent.offset + parent.rotation * local.offset;
 			m_final[i].rotation = parent.rotation * local.rotation;
 		} else {
@@ -340,12 +340,12 @@ void View::updateBones(float frame) {
 // ------------------------------------------------- //
 
 void View::updateCamera() {
-	const vec3 up(0,1,0);
-	vec3 z = m_camera - m_target;
+	const BVH_Math::vec3 up(0,1,0);
+	BVH_Math::vec3 z = m_camera - m_target;
 	z.normalise();
-	vec3 x = up.cross(z);
+	BVH_Math::vec3 x = up.cross(z);
 	x.normalise();
-	vec3 y = z.cross(x);
+	BVH_Math::vec3 y = z.cross(x);
 	y.normalise();
 	
 	float* m = m_viewMatrix;
