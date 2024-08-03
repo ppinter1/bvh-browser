@@ -2,6 +2,7 @@
 #define _BVH_
 
 #include "transform.h"
+#include <vector>
 
 /** bvh mocap data */
 class BVH {
@@ -9,14 +10,18 @@ class BVH {
 
 	enum Channel { Xpos=1, Ypos, Zpos, Xrot, Yrot, Zrot };
 
-	struct Part {
-		int        parent;
-		vec3       offset;
-		vec3       end;
-		char*      name;
-		Transform* motion;
-		int        channels;
-	};
+    struct Part {
+
+        char*               name;
+        int                 index;
+        int                 parent;
+        int                 channels;
+        int                 childCount;
+        vec3       			offset;
+        vec3       			end;
+        Transform* 			motion;
+		std::vector<int>    childIndices;
+    };
 
 	public:
 	BVH();

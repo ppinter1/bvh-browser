@@ -8,23 +8,22 @@
 #include "view.h"
 #include "directory.h"
 #include "thread.h"
-
 #include "miniz.c"
 
 using namespace base;
 
 struct FileEntry {
 
-	std::string directory;	// File directory or zip file
-	std::string name;		// File name
-	std::string archive;	// Directory is a zip file
-	int         zipIndex;	// Index of file in archive
+	std::string directory;				// File directory or zip file
+	std::string name;					// File name
+	std::string archive;				// Directory is a zip file
+	int         zipIndex;				// Index of file in archive
 };
 
 struct LoadRequest {
 
-	FileEntry file;		// File to load
-	View*     view;		// Target view
+	FileEntry 	file;					// File to load
+	View*     	view;					// Target view
 };
 
 enum AppMode { VIEW_SINGLE, VIEW_TILES };
@@ -32,19 +31,22 @@ enum AppMode { VIEW_SINGLE, VIEW_TILES };
 struct App {
 
 	SDL_Window* window;					// app window
-	int         activeIndex;			// current view index in single mode
 	View*       activeView;				// view accepting input
 	AppMode     mode;					// current mode
-	int         scrollOffset;			// Scroll offset in tile view
-	std::vector<View*> views;			// all views
-	std::set< std::string > paths;		// directorys - to avoid duplication
-	std::vector< FileEntry > files;		// all bvh files found
-	int width, height;					// window size
-	int tileSize;						// tile size for tiled view
+	
+	int         activeIndex;			// current view index in single mode
+	int         scrollOffset;			// scroll offset in tile view
+	int 		width, height;			// window size
+	int 		tileSize;				// tile size for tiled view
 
-	base::Thread loadThread;				// loading thread
-	base::Mutex  loadMutex;					// Loading mutex
-	std::vector<LoadRequest> loadQueue;		// Queue of views to be loaded
+	std::vector<View*> 		 views;		// all views
+	std::set<std::string> 	 paths;		// directorys - to avoid duplication
+	std::vector<FileEntry> 	 files;		// all bvh files found
+	std::vector<LoadRequest> loadQueue;	// queue of views to be loaded
+
+	base::Thread loadThread;			// loading thread
+	base::Mutex  loadMutex;				// loading mutex
+
 } app;
 
 // -------------------------------------------------------------------------------------- //

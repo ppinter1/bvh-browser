@@ -11,6 +11,9 @@ BVH::~BVH() {
 	for(int i=0; i<m_partCount; ++i) {
 		delete [] m_parts[i]->name;
 		delete [] m_parts[i]->motion;
+
+        m_parts[i]->childIndices = std::vector<int>();  // Release memory by replacing with an empty vectpr (https://stackoverflow.com/a/63196454)
+
 		delete m_parts[i];
 	}
 	delete [] m_parts;
@@ -66,12 +69,13 @@ BVH::Part* BVH::readHeirachy(const char*& data) {
 	// block start
 	if(!word(data, "{", 1)) return 0;
 
-	// Create part
-	Part* part = new Part;
-	part->parent = -1;
-	part->name = 0;
-	part->channels = 0;
-	part->motion = 0;
+	Part* part = new Part;                      // Create part
+    
+	part->parent       = -1;
+	part->name         = 0;
+	part->channels     = 0;
+	part->motion       = 0;
+    part->childIndices = std::vector<int>();
 
 	if(len>0) {
 		part->name = new char[len+1];
@@ -86,17 +90,22 @@ BVH::Part* BVH::readHeirachy(const char*& data) {
 		delete [] m_parts;
 		m_parts = list;
 	}
-	int index = m_partCount;
-	m_parts[ m_partCount ] = part;
-	++m_partCount;
-	int channelCount = 0;
-	int childCount = 0;
+
+	int partIndex      = m_partCount;
+    int channelCount   = 0;
+    int childCount     = 0;
+    
+    part->index        = partIndex;
+    
+	m_parts[partIndex] = part;
+    
+	m_partCount++;
 
 	// Part data
 	while(*data) {
 		whitespace(data);
 
-		// Reat joint offset
+		// Read joint offset
 		if(word(data, "OFFSET", 6)) {
 			readFloat(data, part->offset.x);
 			readFloat(data, part->offset.y);
@@ -118,13 +127,18 @@ BVH::Part* BVH::readHeirachy(const char*& data) {
 			}
 		}
 
-		// Read child part
-		else if(word(data, "JOINT", 5)) {
-			Part* child = readHeirachy(data);
-			if(!child) break;
-			child->parent = index;
-			part->end = part->end + child->offset;
-			++childCount;
+		else if (word (data, "JOINT", 5)) {     // Read child part
+            
+			Part* child = readHeirachy (data);
+            
+			if (!child) break;
+
+            ++childCount;
+
+            child->parent = partIndex;
+			part->end     = part->end + child->offset;
+
+            part->childIndices.push_back (child->index);
 		}
 
 		// End point
@@ -223,11 +237,6 @@ bool BVH::load(const char* data) {
 					if(channel == 0) {
 						part->motion[frame].rotation = rot;
 						part->motion[frame].offset = pos;
-
-						// // Extract matrix for comparison
-						// float mat[16];
-						// Transform tmp = part->motion[frame];
-						// tmp.toMatrix(mat);
 
 						// Next part
 						++partIndex;
