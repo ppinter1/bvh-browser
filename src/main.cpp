@@ -30,14 +30,14 @@ enum AppMode { VIEW_SINGLE, VIEW_TILES };
 
 struct App {
 
+	AppMode     mode;					// current mode
 	SDL_Window* window;					// app window
 	View*       activeView;				// view accepting input
-	AppMode     mode;					// current mode
 	
-	int         activeIndex;			// current view index in single mode
+	int 		tileSize;				// tile size for tiled view
+	int         activeIndex;			// current single mode view index
 	int         scrollOffset;			// scroll offset in tile view
 	int 		width, height;			// window size
-	int 		tileSize;				// tile size for tiled view
 
 	std::vector<View*> 		 views;		// all views
 	std::set<std::string> 	 paths;		// directorys - to avoid duplication
@@ -82,8 +82,10 @@ inline std::string getDirectory (const char* path) {
 void addFile (const char* f) {
 
 	FileEntry file;
-	file.name = getName (f);
-	file.directory = getDirectory (f);
+	
+	file.name		= getName (f);
+	file.directory	= getDirectory (f);
+
 	app.files.push_back (file);
 
 	printf ("File: %s\n", f);
