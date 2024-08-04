@@ -285,12 +285,12 @@ void loadThreadFunc (bool* running) {
 
 			next.view->setState (View::LOADING);
 			BVH* bvh = loadFile (next.file);
-			next.view->setBVH (bvh, next.file.name.c_str());
-			next.view->autoZoom();
+			next.view->setBVH   (bvh, next.file.name.c_str());
+			next.view->autoZoom ();
 			next.view->setState (bvh? View::LOADED: View::INVALID);
 		}
 
-		Thread::sleep(10);
+		Thread::sleep (10);
 	}
 
 	printf ("Load thread ended\n");
@@ -331,7 +331,7 @@ bool exportFile (const FileEntry& file) {
 		memset (&zipFile, 0, sizeof(zipFile));
 		mz_bool status = mz_zip_reader_init_file (&zipFile, file.archive.c_str(), 0);
 
-		if(!status) return false;
+		if (!status) return false;
 
 		mz_zip_reader_extract_to_file (&zipFile, file.zipIndex, outFile, MZ_ZIP_FLAG_IGNORE_PATH);
 		mz_zip_reader_end (&zipFile);
@@ -341,17 +341,17 @@ bool exportFile (const FileEntry& file) {
 
 // -------------------------------------------------------------------------------------- //
 
-void mainLoop();
+void mainLoop   ();
 void createViews();
 void setupTiles (bool smooth);
-void setLayout (AppMode layout);
+void setLayout  (AppMode layout);
 
 int main (int argc, char* argv[]) {
 
 	if (argc == 1) {
 
 		printf(
-			"\nusage: bvh-browser {.bvh | .zip | directory/ (note trailing '/')}\n\n"
+			"\nusage: bvh-browser {.bvh | .zip | directory/ (Note trailing slash!)}\n\n"
 			"bvh-browser (c) Sam Gynn (http://sam.draknek.org)\n"
 			"Distributed under GPL\n\n");
 		
@@ -372,8 +372,7 @@ int main (int argc, char* argv[]) {
 			std::string dir = getDirectory (argv[i]);
 			addDirectory (dir.c_str(), false);
 
-			// Initial index
-			const char* name = getName (argv[i]);
+			const char* name = getName (argv[i]);						// Initial index
 
 			for (size_t j=0; j<app.files.size(); ++j) {
 
@@ -386,9 +385,7 @@ int main (int argc, char* argv[]) {
 		}
 	}
 
-
-	// setup SDL window
-	app.width 	 		= 1280;
+	app.width 	 		= 1280;											// setup SDL window
 	app.height 	 		= 1024;
 	app.tileSize 		= 256;
 	const char* title 	= "bvh-browser";
@@ -418,20 +415,17 @@ int main (int argc, char* argv[]) {
 
 	glEnable (GL_DEPTH_TEST);
 
-	// Load font
-	View::setFont("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 16);	// ick - seems there is no search.
+	View::setFont ("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 16);	// Load font (seems there is no search)
 
-	// Set up views
-	createViews();
+	createViews();												// Set up views
 
-	// Initial single mode
-	if (app.activeIndex >= 0) {
+	if (app.activeIndex >= 0) {									// Initial single mode
 
 		app.activeView = app.views[app.activeIndex];
-		app.activeView->resize(0, 0, app.width, app.height, false);
-		app.activeView->setVisible(true);
+		app.activeView->resize (0, 0, app.width, app.height, false);
+		app.activeView->setVisible (true);
 
-		for (int i=0; i<4; ++i) {		// Load files
+		for (int i=0; i<4; ++i) {								// Load files
 
 			int k = (app.activeIndex + i) % app.views.size();
 
@@ -444,7 +438,6 @@ int main (int argc, char* argv[]) {
 		setLayout (VIEW_TILES);
 		setupTiles (false);
 	}
-
 
 	mainLoop();
 
@@ -530,22 +523,21 @@ void mainLoop() {
 
 	SDL_Event event;
 	uint ticks, lticks;
-	
-	bool running	= true;
 	ticks 			= lticks = SDL_GetTicks();
+
+	bool running	= true;
 	bool rotate 	= false;
 	bool moved 		= false;
 	int keyMask 	= 0;
 	int index 		= 0;
 
-	// start load thread
-	app.loadThread.begin (&loadThreadFunc, &running);
+	app.loadThread.begin (&loadThreadFunc, &running);		// start load thread
 
 	while (running) {
 
-		if (SDL_PollEvent(&event)) {
+		if (SDL_PollEvent (&event)) {
 
-			switch(event.type) {
+			switch (event.type) {
 
 			case SDL_QUIT:
 
@@ -554,7 +546,7 @@ void mainLoop() {
 
 			case SDL_WINDOWEVENT:
 
-				switch(event.window.event) {
+				switch (event.window.event) {
 
 				case SDL_WINDOWEVENT_RESIZED:
 				case SDL_WINDOWEVENT_SIZE_CHANGED:
@@ -565,10 +557,10 @@ void mainLoop() {
 					if (app.tileSize > app.width) app.tileSize = app.width;
 					if (app.mode == VIEW_SINGLE) {
 
-						app.activeView->resize(0,0,app.width,app.height,false);
+						app.activeView->resize (0,0,app.width,app.height,false);
 						app.activeView->autoZoom();
 					
-					} else { setupTiles(false); }
+					} else { setupTiles (false); }
 					break;
 
 				}
@@ -578,11 +570,11 @@ void mainLoop() {
 
 				if (endsWith (event.drop.file, ".bvh")) {
 
-					addFile (event.drop.file);
-					createViews();
-					selectView (app.views.size() - 1 );
+					addFile 	(event.drop.file);
+					createViews	();
+					selectView 	(app.views.size() - 1 );
 					app.activeView = app.views.back();
-					setLayout (VIEW_SINGLE);
+					setLayout 	(VIEW_SINGLE);
 				}
 
 				SDL_free (event.drop.file);
@@ -598,7 +590,7 @@ void mainLoop() {
 
 					if (app.tileSize < 32) app.tileSize = 32;
 					if (app.tileSize > app.width) app.tileSize = app.width;
-					setupTiles(false);
+					setupTiles (false);
 				
 				} else if (app.mode == VIEW_TILES && !rotate) {
 
@@ -611,7 +603,7 @@ void mainLoop() {
 
 						app.views[i]->move(0, -offset);
 					}
-				} else { app.activeView->zoomView( 1.0 - event.wheel.y * 0.1); }
+				} else app.activeView->zoomView( 1.0 - event.wheel.y * 0.1);
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
@@ -639,18 +631,17 @@ void mainLoop() {
 				if (event.key.keysym.sym == SDLK_z) app.activeView->autoZoom();
 				if (event.key.keysym.sym == SDLK_SPACE) app.activeView->togglePause();
 
-				// Mask
-				if (event.key.keysym.sym == SDLK_LCTRL)  keyMask |= 0x01;
+				if (event.key.keysym.sym == SDLK_LCTRL)  keyMask |= 0x01;		// Mask
 				if (event.key.keysym.sym == SDLK_RCTRL)  keyMask |= 0x02;
 				if (event.key.keysym.sym == SDLK_LSHIFT) keyMask |= 0x04;
 				if (event.key.keysym.sym == SDLK_RSHIFT) keyMask |= 0x08;
 				if (event.key.keysym.sym == SDLK_LALT)   keyMask |= 0x10;
 				if (event.key.keysym.sym == SDLK_RALT)   keyMask |= 0x20;
 
-				// Navigation
-				if (app.files.size() > 1 && app.mode == VIEW_SINGLE) {
+				if (app.files.size() > 1 && app.mode == VIEW_SINGLE) {			// Navigation
 
 					int m = 0;
+
 					if (event.key.keysym.sym == SDLK_LEFT) m = -1;
 					if (event.key.keysym.sym == SDLK_RIGHT) m = 1;
 
@@ -662,30 +653,28 @@ void mainLoop() {
 						selectView (index);
 						app.activeView->setVisible (true);
 						app.activeView->resize (0,0,app.width,app.height, false);
-						// Load files (with look ahead)
-						for (int i=0; i<4; ++i) {
+
+						for (int i=0; i<4; ++i) {								// Load files (with look ahead)
 
 							int k = (index + i) % count;
 
 							if (app.views[k]->getState() == View::EMPTY) {
 
-								requestLoad(app.files[k], app.views[k]);
+								requestLoad (app.files[k], app.views[k]);
 							}
 						}
 					}
 				}
 
-				// Escape
-				if (event.key.keysym.sym == SDLK_ESCAPE) {
+				if (event.key.keysym.sym == SDLK_ESCAPE) {						// Escape
 
 					if (app.mode == VIEW_SINGLE) setLayout (VIEW_TILES);
 					else running = false;
 				}
 
-				// Export test
-				if (event.key.keysym.sym == SDLK_s) {
+				if (event.key.keysym.sym == SDLK_s) {							// Export test
 
-					exportFile(app.files[app.activeIndex]);
+					exportFile (app.files[app.activeIndex]);
 				}
 
 				break;
@@ -703,9 +692,10 @@ void mainLoop() {
 			default:
 				break;
 			}
+			
 		} else {
 
-			int mx, my;					// Rotation
+			int mx, my;									// Rotation
 			SDL_GetRelativeMouseState (&mx, &my);
 
 			if (rotate) {
@@ -714,19 +704,20 @@ void mainLoop() {
 				moved |= mx || my;
 			}
 						
-			lticks 	= ticks;			// Update all views
+			lticks 	= ticks;							// Update all views
 			ticks 	= SDL_GetTicks();
 
-			float time = (ticks - lticks) * 0.001; // ticks in miliseconds
-
+			float time = (ticks - lticks) * 0.001; 		// ticks in miliseconds
 
 			int count = 0;
+
 			switch (app.mode) {
+
 			case VIEW_SINGLE:
 
 				if (app.activeView) {
 
-					glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+					glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 					app.activeView->update (time);
 					app.activeView->render();
 				}
@@ -734,8 +725,7 @@ void mainLoop() {
 
 			case VIEW_TILES:
 
-				// Update all visible views
-				for (size_t i=0; i<app.views.size(); ++i) {
+				for (size_t i=0; i<app.views.size(); ++i) {				// Update all visible views
 
 					View* view = app.views[i];
 
@@ -743,14 +733,13 @@ void mainLoop() {
 					if (view->bottom() <= 0) break;
 					if (view->getState() == View::EMPTY) {
 
-						requestLoad(app.files[i], view);
+						requestLoad (app.files[i], view);
 					}
 
 					view->update (time);
 				}
 
-				// Render everything
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Render everything
 
 				if (app.mode == VIEW_TILES) {
 
@@ -768,8 +757,8 @@ void mainLoop() {
 				break;
 			}
 
-			// Limit to 60fps?
-			uint t = SDL_GetTicks() - ticks;
+			uint t = SDL_GetTicks() - ticks;			// Limit to 60fps?
+
 			if (t < 10) SDL_Delay (10 - t);
 			else SDL_Delay (1);
 

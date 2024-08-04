@@ -8,8 +8,7 @@
 View::View (int x, int y, int w, int h) : m_x(x), m_y(y), m_width(w), m_height(h), 
 										  m_tx(x), m_ty(y), m_twidth(w), m_theight(h),
 										  m_visible(false), m_paused(false), m_state(EMPTY),
-										  m_text(0), m_bvh(0), m_name(0)
-{
+										  m_text(0), m_bvh(0), m_name(0) {
 	m_near 	= 0.1f;
 	m_far 	= 1000.f;
 	m_frame = 0;
@@ -64,8 +63,7 @@ void View::setText (const char* text) {
 		if (!m_text) glGenTextures (1, &m_text);
 		glBindTexture (GL_TEXTURE_2D, m_text);
 
-		// Create text image
-		SDL_Colour colour;
+		SDL_Colour colour;							// Create text image
 		colour.r = colour.g = colour.b = 255;
 		SDL_Surface* s = TTF_RenderText_Blended (staticFont, text, colour);
 
@@ -102,6 +100,7 @@ void View::resize (int x, int y, int w, int h, bool smooth) {
 }
 
 void View::move (int x, int y) {
+
 	m_x += x;
 	m_y += y;
 	m_tx += x;
@@ -143,18 +142,17 @@ inline float View::zoomToFit (const BVH_Math::vec3& point, const BVH_Math::vec3&
 
 	for (int i=0; i<4; ++i) {
 
-		// Distance to plane in dir
-		float denom = n[i].dot(dir);
+		float denom = n[i].dot(dir);				// Distance to plane in dir
 		float t = d[i] - n[i].dot (point) / denom;
 
 		if (t>shift) shift = t;
 	}
 
-	// update frustum
-	if (shift > 0) {
+	if (shift > 0) {								// update frustum
 
 		m_camera = m_camera - dir * shift;
-		for(int i=0; i<4; ++i) d[i] = n[i].dot(m_camera);
+
+		for (int i=0; i<4; ++i) d[i] = n[i].dot (m_camera);
 	}
 
 	return shift;
@@ -172,8 +170,7 @@ void View::autoZoom() {
 	float d[4];
 	float m[16];
 
-	// Get frustum planes
-	BVH_Math::multMatrix (m_projectionMatrix, m_viewMatrix, m);
+	BVH_Math::multMatrix (m_projectionMatrix, m_viewMatrix, m);		// Get frustum planes
 
 	n[0] = BVH_Math::vec3 (m[3]+m[0], m[7]+m[4], m[11]+m[8]);
 	n[1] = BVH_Math::vec3 (m[3]-m[0], m[7]-m[4], m[11]-m[8]);
@@ -182,17 +179,16 @@ void View::autoZoom() {
 
 	for (int i=0; i<4; ++i) d[i] = n[i].dot (m_camera);
 
-	// Zoom out to fit points
-	float shift = 0;
+	float shift = 0;												// Zoom out to fit points
 
 	for (int i=0; i<m_bvh->getPartCount(); ++i) {
 
-		shift += zoomToFit( m_final[i].offset, dir, n, d);
+		shift += zoomToFit (m_final[i].offset, dir, n, d);
 	}
 
 	for (int i=0; i<m_bvh->getFrames(); ++i) {
 
-		shift += zoomToFit(m_bvh->getPart(0)->motion[i].offset, dir, n, d);
+		shift += zoomToFit (m_bvh->getPart(0)->motion[i].offset, dir, n, d);
 	}
 
 	if (shift == 0) m_camera = m_target - dir;
@@ -217,10 +213,10 @@ void View::update (float time) {
 		int dh = m_theight - m_height;
 		int max = 0;
 
-		if (abs(dx) > max) max = abs (dx);
-		if (abs(dy) > max) max = abs (dy);
-		if (abs(dw) > max) max = abs (dw);
-		if (abs(dh) > max) max = abs (dh);
+		if (abs (dx) > max) max = abs (dx);
+		if (abs (dy) > max) max = abs (dy);
+		if (abs (dw) > max) max = abs (dw);
+		if (abs (dh) > max) max = abs (dh);
 
 		#define lerp(a,b,t) (a + (b-a)*t)
 
@@ -230,6 +226,7 @@ void View::update (float time) {
 		m_y = lerp (m_y, m_ty, t);
 		m_width  = lerp (m_width, m_twidth,   t);
 		m_height = lerp (m_height, m_theight, t);
+
 		updateProjection();
 	}
 	
@@ -262,8 +259,7 @@ void View::render() const {
 	drawGrid			();
 	glPopMatrix			();
 
-	// Draw skeleton
-	if (m_bvh) {
+	if (m_bvh) {											// Draw skeleton
 
 		glEnable		(GL_POLYGON_OFFSET_LINE);
 		glPolygonOffset	(-1,-1);
@@ -277,8 +273,7 @@ void View::render() const {
 			glPushMatrix();
 			glMultMatrixf(matrix);
 
-			// Rotate to use z axis mesh
-			const BVH_Math::vec3 zAxis(0,0,1);
+			const BVH_Math::vec3 zAxis (0,0,1);				// Rotate to use z axis mesh
 			BVH_Math::vec3 dir = m_bvh->getPart(i)->end;
 			float length = dir.length();
 			dir *= 1.0 / length;
@@ -292,8 +287,7 @@ void View::render() const {
 
 			glScalef		(length, length, length);
 
-			// Draw bone mesh
-			glPolygonMode	(GL_FRONT, GL_LINE);
+			glPolygonMode	(GL_FRONT, GL_LINE);			// Draw bone mesh
 			glColor4f		(0.2, 0, 0.5, 1);
 			drawBone		();
 			glPolygonMode	(GL_FRONT, GL_FILL);
@@ -303,8 +297,7 @@ void View::render() const {
 		}
 	}
 
-	// Border?
-	glLoadIdentity	();
+	glLoadIdentity	();										// Border?
 	glMatrixMode	(GL_PROJECTION);
 	glLoadIdentity	();
 	glColor4f		(0.3, 0.3, 0.3, 1);
@@ -314,8 +307,7 @@ void View::render() const {
 	glVertexPointer	(2, GL_FLOAT, 0, border);
 	glDrawArrays	(GL_LINE_STRIP, 0, 5);
 
-	// Text
-	if (m_text) {
+	if (m_text) {											// Text
 
 		glEnable			(GL_TEXTURE_2D);
 		glEnable			(GL_BLEND);
@@ -343,7 +335,7 @@ void View::render() const {
 
 void View::updateBones (float frame) {
 
-	int f 	= floor(frame);
+	int f 	= floor (frame);
 	float t = frame - f;
 
 	if (f >= m_bvh->getFrames()-1) {
@@ -369,7 +361,7 @@ void View::updateBones (float frame) {
 
 		if (part->parent>=0) {
 
-			local.offset = part->offset; // ?
+			local.offset = part->offset; 			// ?
 
 			const BVH_Math::Transform &parent = m_final[part->parent];
 
@@ -382,15 +374,18 @@ void View::updateBones (float frame) {
 	}
 }
 
-// ------------------------------------------------- //
+// ----------------------------------------------- //
 
 void View::updateCamera() {
 
 	const BVH_Math::vec3 up (0,1,0);
+
 	BVH_Math::vec3 z = m_camera - m_target;
 	z.normalise();
+
 	BVH_Math::vec3 x = up.cross (z);
 	x.normalise();
+
 	BVH_Math::vec3 y = z.cross (x);
 	y.normalise();
 	
@@ -472,8 +467,7 @@ void View::drawGrid() {
 		}
 	}
 
-	// Draw it
-	glEnableClientState	(GL_COLOR_ARRAY);
+	glEnableClientState	(GL_COLOR_ARRAY);							// Draw it
 	glVertexPointer		(2, GL_FLOAT, sizeof(GridVertex), data);
 	glColorPointer		(3, GL_UNSIGNED_BYTE, sizeof(GridVertex), &data[0].c);
 	glDrawArrays		(GL_LINES, 0, lines*4);
@@ -485,6 +479,6 @@ void View::drawBone() {
 	static float 		 vx[18] = { 0,0,0,  .06,.06,.1,  .06,-.06,0.1,  -.06,-.06,.1, -.06,.06,.1,  0,0,1 };
 	static unsigned char ix[24] = { 0,1,2, 0,2,3, 0,3,4, 0,4,1,  1,5,2, 2,5,3, 3,5,4, 4,5,1 };
 
-	glVertexPointer	(3, GL_FLOAT, 0, vx);
-	glDrawElements	(GL_TRIANGLES, 24, GL_UNSIGNED_BYTE, ix);
+	glVertexPointer		(3, GL_FLOAT, 0, vx);
+	glDrawElements		(GL_TRIANGLES, 24, GL_UNSIGNED_BYTE, ix);
 }

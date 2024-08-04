@@ -3,32 +3,33 @@
 
 #include <vector>
 
-
 /** Directory class for listing files in a directory */
+
 class Directory {
+
 	public:
-	enum FileType { FILE, DIRECTORY };
 
-	Directory(const char* path=".");
-	~Directory();
+		enum FileType { FILE, DIRECTORY };
 
-	/** Test if a file is in this directory */
-	bool contains(const char* file);
+		Directory (const char* path=".");
+		~Directory();
 
-	/** Get the current path */
-	const char* path() const { return m_path; }
+		bool contains(const char* file);						/** Test if a file is in this directory */
 
-	/// Iterator ///
-	struct File { char name[128]; int ext; int type; };
-	typedef std::vector<File>::const_iterator iterator;
+		const char* path() const { return m_path; }				/** Get the current path */
 
-	iterator begin()       { scan(); return m_files.begin(); }
-	iterator end() const   { return m_files.end(); }
-	
+		struct File { char name[128]; int ext; int type; };		/// Iterator ///
+
+		typedef std::vector<File>::const_iterator iterator;
+
+		iterator begin()       { scan(); return m_files.begin(); }
+		iterator end() const   { return m_files.end(); }
+		
 	protected:
-	int scan();
-	char m_path[2048];
-	std::vector<File> m_files;
+
+		int scan();
+		char m_path[2048];
+		std::vector<File> m_files;
 };
 
 bool isDirectory(const char* path);
