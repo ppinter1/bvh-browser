@@ -351,7 +351,7 @@ int main (int argc, char* argv[]) {
 	if (argc == 1) {
 
 		printf(
-			"\nusage: bvh-browser {.bvh | .zip | directory/ (note trailing '\')}\n\n"
+			"\nusage: bvh-browser {.bvh | .zip | directory/ (note trailing '/')}\n\n"
 			"bvh-browser (c) Sam Gynn (http://sam.draknek.org)\n"
 			"Distributed under GPL\n\n");
 		
