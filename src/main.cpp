@@ -6,8 +6,9 @@
 #include <set>
 
 #include "view.h"
-#include "directory.h"
 #include "thread.h"
+#include "directory.h"
+
 #include "miniz.c"
 
 using namespace base;
@@ -40,7 +41,7 @@ struct App {
 	int 		width, height;			// window size
 
 	std::vector<View*> 		 views;		// all views
-	std::set<std::string> 	 paths;		// directorys - to avoid duplication
+	std::set<std::string> 	 paths;		// directories - to avoid duplication
 	std::vector<FileEntry> 	 files;		// all bvh files found
 	std::vector<LoadRequest> loadQueue;	// queue of views to be loaded
 
@@ -53,8 +54,8 @@ struct App {
 
 inline bool endsWith (const char* s, const char* end) {
 
-	int sl = strlen(s);
-	int el = strlen(end);
+	int sl = strlen (s);
+	int el = strlen (end);
 
 	return sl >= el && strcmp(s+sl-el, end) == 0;
 }
@@ -70,9 +71,9 @@ inline const char* getName (const char* path) {
 
 inline std::string getDirectory (const char* path) {
 
-	const char* c = strrchr(path, '/');
+	const char* c = strrchr (path, '/');
 
-	if (!c) c = strrchr(path, '\\');
+	if (!c) c = strrchr (path, '\\');
 
 	return c? std::string(path, c-path): std::string(".");
 }
@@ -103,8 +104,7 @@ int addZip (const char* f) {
 		return -1;
 	}
 
-	// read directory info
-	int files = mz_zip_reader_get_num_files (&zipFile);
+	int files = mz_zip_reader_get_num_files (&zipFile);			// read directory info
 
 	for (int i=0; i<files; ++i) {
 
@@ -124,7 +124,9 @@ int addZip (const char* f) {
 
 				app.files.push_back (file);
 			}
+
 		} else {
+
 			printf ("Failed to get file info from archive %s\n", f);
 			mz_zip_reader_end (&zipFile);
 			return -1;
@@ -137,7 +139,7 @@ int addZip (const char* f) {
 
 void addDirectory (const char* dir, bool recursive) {
 
-	printf("Path: %s\n", dir);
+	printf ("Path: %s\n", dir);
 
 	if (app.paths.find (dir) != app.paths.end()) return;
 
@@ -148,8 +150,8 @@ void addDirectory (const char* dir, bool recursive) {
 
 		if (i->type == Directory::DIRECTORY && recursive && i->name[0]!='.') {
 
-			snprintf(buffer, 2048, "%s%s", dir, i->name);
-			addDirectory(buffer, true);
+			snprintf (buffer, 2048, "%s%s", dir, i->name);
+			addDirectory (buffer, true);
 
 		} else if (strcmp (i->name + i->ext, "bvh")==0) {
 
@@ -175,8 +177,10 @@ BVH* loadFile (const FileEntry& file) {
 
 		fseek (fp, 0, SEEK_END);
 		int len = ftell (fp);
+
 		rewind (fp);
 		char* content = new char[len+1];
+
 		fread (content, 1, len, fp);
 		content[len] = 0;
 		fclose (fp);
@@ -188,7 +192,7 @@ BVH* loadFile (const FileEntry& file) {
 		if (r) return bvh;
 
 		else {
-			printf("Error loading %s\n", filename.c_str());
+			printf ("Error loading %s\n", filename.c_str());
 			delete bvh;
 		}
 		return 0;
@@ -209,8 +213,11 @@ BVH* loadFile (const FileEntry& file) {
 		if (p) {
 
 			((char*)p)[size-1] = 0;
+
 			bvh = new BVH();
+
 			result = bvh->load ((const char*)p);
+			
 			if (!result) { delete bvh; bvh = 0; }
 			mz_free (p);
 		}
@@ -271,23 +278,26 @@ void loadThreadFunc (bool* running) {
 		LoadRequest next;
 		next.view = 0;
 
-		{
+		{										// Explicitly scope MutexLock to avoid segfault and performance issues
 			MutexLock lock (app.loadMutex);
 
 			if (!app.loadQueue.empty()) {
 
 				next = app.loadQueue.front();
+
 				app.loadQueue.erase (app.loadQueue.begin());
 			}
-		}
 
-		if (next.view) {
+			if (next.view) {
 
-			next.view->setState (View::LOADING);
-			BVH* bvh = loadFile (next.file);
-			next.view->setBVH   (bvh, next.file.name.c_str());
-			next.view->autoZoom ();
-			next.view->setState (bvh? View::LOADED: View::INVALID);
+				next.view->setState (View::LOADING);
+
+				BVH* bvh = loadFile (next.file);
+
+				next.view->setBVH   (bvh, next.file.name.c_str());
+				next.view->autoZoom ();
+				next.view->setState (bvh? View::LOADED: View::INVALID);
+			}
 		}
 
 		Thread::sleep (10);
@@ -314,12 +324,14 @@ bool exportFile (const FileEntry& file) {
 
 		fseek (fp, 0, SEEK_END);
 		size_t len = ftell(fp);
+
 		rewind (fp);
 		char* content = new char[len];
 		fread (content, 1, len, fp);
+
 		fclose (fp);
 		
-		fp = fopen(outFile, "w");
+		fp = fopen (outFile, "w");
 
 		if (fp) fwrite (content, 1, len, fp);
 		delete [] content;
@@ -366,9 +378,10 @@ int main (int argc, char* argv[]) {
 
 		if (isDirectory (argv[i])) { addDirectory (argv[i], true); }	// Valid: bvh, zip, directory (with trailing '/')
 
-		else if (endsWith(argv[i], ".zip")) { addZip(argv[i]); }
+		else if (endsWith (argv[i], ".zip")) { addZip (argv[i]); }
 		
 		else {
+
 			std::string dir = getDirectory (argv[i]);
 			addDirectory (dir.c_str(), false);
 
@@ -434,7 +447,9 @@ int main (int argc, char* argv[]) {
 				requestLoad (app.files[k], app.views[k]);
 			}
 		}
+
 	} else {
+
 		setLayout (VIEW_TILES);
 		setupTiles (false);
 	}
@@ -464,7 +479,7 @@ void setupTiles (bool smooth) {
 		int y 		= app.height - app.tileSize - i / columns * app.tileSize - app.scrollOffset;
 
 		view->resize (x, y, app.tileSize, app.tileSize, smooth);
-		view->setVisible(true);
+		view->setVisible (true);
 	}
 }
 
@@ -472,7 +487,7 @@ void setLayout (AppMode layout) {
 
 	switch(layout) {
 
-	case VIEW_SINGLE:	// Single view
+	case VIEW_SINGLE:			// Single view
 
 		for (size_t i=0; i<app.views.size(); ++i) {
 
@@ -483,7 +498,7 @@ void setLayout (AppMode layout) {
 		app.activeView->resize (0,0,app.width,app.height, true);
 		break;
 
-	case VIEW_TILES: // Tile view
+	case VIEW_TILES: 			// Tile view
 
 		setupTiles (true);
 		break;
@@ -500,11 +515,9 @@ int getViewAt (int mx, int my) {
 
 		for (size_t i=0; i<app.views.size(); ++i) {
 
-			if (app.views[i]->contains (mx, my)) {
-
-				return i;
-			}
+			if (app.views[i]->contains (mx, my)) return i;
 		}
+
 	} else return app.activeIndex;
 
 	return -1;
@@ -523,13 +536,14 @@ void mainLoop() {
 
 	SDL_Event event;
 	uint ticks, lticks;
-	ticks 			= lticks = SDL_GetTicks();
 
-	bool running	= true;
-	bool rotate 	= false;
-	bool moved 		= false;
-	int keyMask 	= 0;
-	int index 		= 0;
+	ticks = lticks = SDL_GetTicks();
+
+	bool running   = true;
+	bool rotate    = false;
+	bool moved 	   = false;
+	int keyMask    = 0;
+	int index 	   = 0;
 
 	app.loadThread.begin (&loadThreadFunc, &running);		// start load thread
 
@@ -555,12 +569,13 @@ void mainLoop() {
 					app.height 	= event.window.data2;
 
 					if (app.tileSize > app.width) app.tileSize = app.width;
+
 					if (app.mode == VIEW_SINGLE) {
 
 						app.activeView->resize (0,0,app.width,app.height,false);
 						app.activeView->autoZoom();
 					
-					} else { setupTiles (false); }
+					} else setupTiles (false);
 					break;
 
 				}
@@ -573,7 +588,9 @@ void mainLoop() {
 					addFile 	(event.drop.file);
 					createViews	();
 					selectView 	(app.views.size() - 1 );
+
 					app.activeView = app.views.back();
+
 					setLayout 	(VIEW_SINGLE);
 				}
 
@@ -603,6 +620,7 @@ void mainLoop() {
 
 						app.views[i]->move(0, -offset);
 					}
+
 				} else app.activeView->zoomView( 1.0 - event.wheel.y * 0.1);
 				break;
 
@@ -611,6 +629,7 @@ void mainLoop() {
 				moved = false;
 				rotate = true;
 				index = getViewAt (event.button.x, event.button.y);
+
 				selectView (index);
 				break;
 
@@ -650,7 +669,9 @@ void mainLoop() {
 						int count 	= app.views.size();
 						index 		= (app.activeIndex + m + count) % count;
 						app.activeView->setVisible (false);
+
 						selectView (index);
+
 						app.activeView->setVisible (true);
 						app.activeView->resize (0,0,app.width,app.height, false);
 
@@ -676,7 +697,6 @@ void mainLoop() {
 
 					exportFile (app.files[app.activeIndex]);
 				}
-
 				break;
 
 			case SDL_KEYUP:
@@ -690,17 +710,20 @@ void mainLoop() {
 				break;
 
 			default:
+
 				break;
 			}
 			
 		} else {
 
 			int mx, my;									// Rotation
+
 			SDL_GetRelativeMouseState (&mx, &my);
 
 			if (rotate) {
 
 				if (app.activeView) app.activeView->rotateView (-mx*0.01, my*0.01);
+
 				moved |= mx || my;
 			}
 						
@@ -718,6 +741,7 @@ void mainLoop() {
 				if (app.activeView) {
 
 					glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 					app.activeView->update (time);
 					app.activeView->render();
 				}

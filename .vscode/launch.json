@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bvh-browser",
-            "args": ["/home/pinter/Desktop/Animations/Petting Animal/Petting Animal.bvh"],
+            "args": ["/home/pinter/Desktop/Animations/CMU_complete.zip"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

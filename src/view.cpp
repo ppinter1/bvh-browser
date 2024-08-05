@@ -268,7 +268,7 @@ void View::render() const {
 
 		for (int i=0; i<m_bvh->getPartCount(); ++i) {
 
-			m_final[i].toMatrix(matrix);
+			m_final[i].toMatrix (matrix);
 
 			glPushMatrix();
 			glMultMatrixf(matrix);
