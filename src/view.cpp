@@ -125,7 +125,7 @@ void View::rotateView (float yaw, float pitch) {
 	BVH_Math::vec3 d = m_camera - m_target;
 	float zoom = d.length();
 	float oldYaw = atan2 (d.x, d.z);
-	float oldPitch = atan2 (d.y, sqrt(d.x*d.x+d.z*d.z));
+	float oldPitch = atan2 (d.y, sqrt (d.x*d.x+d.z*d.z));
 	setCamera (oldYaw+yaw, oldPitch+pitch, zoom);
 }
 
@@ -270,8 +270,8 @@ void View::render() const {
 
 			m_final[i].toMatrix (matrix);
 
-			glPushMatrix();
-			glMultMatrixf(matrix);
+			glPushMatrix  ();
+			glMultMatrixf (matrix);
 
 			const BVH_Math::vec3 zAxis (0,0,1);				// Rotate to use z axis mesh
 			BVH_Math::vec3 dir = m_bvh->getPart(i)->end;
@@ -280,9 +280,9 @@ void View::render() const {
 
 			if (dir.z < 0.999) {
 
-				BVH_Math::vec3 n = dir.cross(zAxis);
-				float d = dir.dot(zAxis);
-				glRotatef( -acos(d) * 180/3.141592653592, n.x, n.y, n.z );
+				BVH_Math::vec3 n = dir.cross (zAxis);
+				float d = dir.dot (zAxis);
+				glRotatef (-acos(d) * 180/3.141592653592, n.x, n.y, n.z );
 			}
 
 			glScalef		(length, length, length);
