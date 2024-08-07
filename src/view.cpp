@@ -1,9 +1,10 @@
-#include "view.h"
 #include <SDL_opengl.h>
 #include <SDL_ttf.h>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+
+#include "view.h"
 
 View::View (int x, int y, int w, int h) : m_x(x), m_y(y), m_width(w), m_height(h), 
 										  m_tx(x), m_ty(y), m_twidth(w), m_theight(h),
@@ -236,7 +237,7 @@ void View::update (float time) {
 
 		if (m_frame > m_bvh->getFrames()) m_frame = 0;
 
-		updateBones(m_frame);
+		updateBones (m_frame);
 	}
 }
 
@@ -318,6 +319,7 @@ void View::render() const {
 
 		float w = m_textWidth * 2.0 / m_width - 1;
 		float h = m_textHeight * 2.0 / m_height - 1;
+
 		float box[] = { -1, -1, -1, h, w, -1,w, h };
 		float tex[] = { 0,1, 0,0, 1,1, 1,0 };
 

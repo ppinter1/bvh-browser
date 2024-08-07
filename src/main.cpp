@@ -31,22 +31,22 @@ enum AppMode { VIEW_SINGLE, VIEW_TILES };
 
 struct App {
 
-	AppMode     mode;					// current mode
-	SDL_Window* window;					// app window
-	View*       activeView;				// view accepting input
+	AppMode     mode;					// Current mode
+	SDL_Window* window;					// App window
+	View*       activeView;				// View accepting input
 	
-	int 		tileSize;				// tile size for tiled view
-	int         activeIndex;			// current single mode view index
-	int         scrollOffset;			// scroll offset in tile view
-	int 		width, height;			// window size
+	int 		tileSize;				// Tile size for tiled view
+	int         activeIndex;			// Current single mode view index
+	int         scrollOffset;			// Scroll offset in tile view
+	int 		width, height;			// Window size
 
-	std::vector<View*> 		 views;		// all views
-	std::set<std::string> 	 paths;		// directories - to avoid duplication
-	std::vector<FileEntry> 	 files;		// all bvh files found
-	std::vector<LoadRequest> loadQueue;	// queue of views to be loaded
+	std::vector<View*> 		 views;		// All views
+	std::set<std::string> 	 paths;		// Directories - to avoid duplication
+	std::vector<FileEntry> 	 files;		// All bvh files found
+	std::vector<LoadRequest> loadQueue;	// Queue of views to be loaded
 
-	base::Thread loadThread;			// loading thread
-	base::Mutex  loadMutex;				// loading mutex
+	base::Thread loadThread;			// Loading thread
+	base::Mutex  loadMutex;				// Loading mutex
 
 } app;
 
@@ -323,7 +323,7 @@ bool exportFile (const FileEntry& file) {
 		if (!fp) { printf ("Failed\n"); return false; }
 
 		fseek (fp, 0, SEEK_END);
-		size_t len = ftell(fp);
+		size_t len = ftell (fp);
 
 		rewind (fp);
 		char* content = new char[len];
