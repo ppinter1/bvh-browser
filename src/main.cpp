@@ -57,7 +57,7 @@ inline bool endsWith (const char* s, const char* end) {
 	int sl = strlen (s);
 	int el = strlen (end);
 
-	return sl >= el && strcmp(s+sl-el, end) == 0;
+	return sl >= el && strcmp (s+sl-el, end) == 0;
 }
 
 inline const char* getName (const char* path) {
@@ -75,7 +75,7 @@ inline std::string getDirectory (const char* path) {
 
 	if (!c) c = strrchr (path, '\\');
 
-	return c? std::string(path, c-path): std::string(".");
+	return c? std::string (path, c-path): std::string(".");
 }
 
 // -------------------------------------------------------------------------------------- //
@@ -95,7 +95,7 @@ void addFile (const char* f) {
 int addZip (const char* f) {
 
 	mz_zip_archive zipFile;
-	memset (&zipFile, 0, sizeof(zipFile));
+	memset (&zipFile, 0, sizeof (zipFile));
 	mz_bool status = mz_zip_reader_init_file (&zipFile, f, 0);
 
 	if (!status) {
@@ -201,7 +201,7 @@ BVH* loadFile (const FileEntry& file) {
 
 		bool result = false;
 		mz_zip_archive zipFile;
-		memset (&zipFile, 0, sizeof(zipFile));
+		memset (&zipFile, 0, sizeof (zipFile));
 		mz_bool status = mz_zip_reader_init_file (&zipFile, file.archive.c_str(), 0);
 
 		if (!status) return 0;
@@ -340,7 +340,7 @@ bool exportFile (const FileEntry& file) {
 	} else {
 
 		mz_zip_archive zipFile;
-		memset (&zipFile, 0, sizeof(zipFile));
+		memset (&zipFile, 0, sizeof (zipFile));
 		mz_bool status = mz_zip_reader_init_file (&zipFile, file.archive.c_str(), 0);
 
 		if (!status) return false;
@@ -376,7 +376,7 @@ int main (int argc, char* argv[]) {
 	
 	for (int i=1; i<argc; ++i) {										// Parse arguments
 
-		if (isDirectory (argv[i])) { addDirectory (argv[i], true); }	// Valid: bvh, zip, directory (with trailing '/')
+		if (isDirectory (argv[i])) { addDirectory (argv[i], true); }	// Valid: .bvh, .zip or directory (with trailing '/')
 
 		else if (endsWith (argv[i], ".zip")) { addZip (argv[i]); }
 		

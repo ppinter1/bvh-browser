@@ -100,7 +100,7 @@ BVH::Part* BVH::readHeirachy (const char*& data) {
         
 		Part** list = new Part*[(m_partCount&0xff8) + 0x8];
         
-		if (m_partCount) memcpy (list, m_parts, m_partCount * sizeof(Part*));
+		if (m_partCount) memcpy (list, m_parts, m_partCount * sizeof (Part*));
         
 		delete []   m_parts;
 		m_parts     = list;

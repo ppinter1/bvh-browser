@@ -470,8 +470,8 @@ void View::drawGrid() {
 	}
 
 	glEnableClientState	(GL_COLOR_ARRAY);							// Draw it
-	glVertexPointer		(2, GL_FLOAT, sizeof(GridVertex), data);
-	glColorPointer		(3, GL_UNSIGNED_BYTE, sizeof(GridVertex), &data[0].c);
+	glVertexPointer		(2, GL_FLOAT, sizeof (GridVertex), data);
+	glColorPointer		(3, GL_UNSIGNED_BYTE, sizeof (GridVertex), &data[0].c);
 	glDrawArrays		(GL_LINES, 0, lines*4);
 	glDisableClientState(GL_COLOR_ARRAY);
 }
