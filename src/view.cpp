@@ -78,7 +78,7 @@ void View::setText (const char* text) {
 	}
 }
 
-void View::setVisible (bool v) {	m_visible = v; }
+void View::setVisible (bool v) { m_visible = v; }
 
 bool View::isVisible() const { return m_visible; }
 
