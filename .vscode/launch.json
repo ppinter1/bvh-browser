@@ -1,6 +1,7 @@
 {
     // If you're running this from within VScode, place a .zip file containing
-    // one or more .bvh files into the workspace directory, as specified below
+    // one or more .bvh files and specify the location in the "args" statement.
+    // Alternately, specify a bvh filename, or directory (with trailing space).
     "version": "0.2.0",
     "configurations": [
         {
