@@ -1,7 +1,6 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    // If you're running this from within VScode, place a .zip file containing
+    // one or more .bvh files into the workspace directory, as specified below
     "version": "0.2.0",
     "configurations": [
         {
@@ -9,7 +8,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bvh-browser",
-            "args": ["/home/pinter/Desktop/Animations/CMU_complete.zip"],
+            "args": ["~/CMU_complete.zip"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
