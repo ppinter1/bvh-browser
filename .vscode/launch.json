@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bvh-browser",
-            "args": ["~/CMU_complete.zip"],
+            "args": ["/media/NASshare/Animations/CMU_complete.zip"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
