@@ -15,7 +15,7 @@ using namespace base;
 
 struct FileEntry {
 
-	std::string directory;				// File directory or zip file
+	std::string directory;				// Directory
 	std::string name;					// File name
 	std::string archive;				// Directory is a zip file
 	int         zipIndex;				// Index of file in archive
@@ -32,7 +32,7 @@ enum AppMode { VIEW_SINGLE, VIEW_TILES };
 struct App {
 
 	AppMode     mode;					// Current mode
-	SDL_Window* window;					// App window
+	SDL_Window* window;					// Curret App window
 	View*       activeView;				// View accepting input
 	
 	int 		tileSize;				// Tile size for tiled view
