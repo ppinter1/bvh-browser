@@ -40,9 +40,9 @@ struct App {
 	int         scrollOffset;			// Scroll offset in tile view
 	int 		width, height;			// Window size
 
-	std::vector<View*> 		 views;		// All views
-	std::set<std::string> 	 paths;		// Directories - to avoid duplication
-	std::vector<FileEntry> 	 files;		// All bvh files found
+	std::vector<View*> 		 views;		// An array of all views
+	std::set<std::string> 	 paths;		// A set of unique Directories
+	std::vector<FileEntry> 	 files;		// An array of all bvh files found
 	std::vector<LoadRequest> loadQueue;	// Queue of views to be loaded
 
 	base::Thread loadThread;			// Loading thread
